@@ -111,11 +111,12 @@ public class Larbol extends Barbol {
     }
 
     public boolean MostrarHermanoDerecho(Nodos R, char dato, boolean bandera) {
-
         if (R != null) {
             if (R.getLi() != null & R.getLd() != null) {
                 if (R.getLi().getDato() == dato) {
+                    System.out.print("El hermano Derecho del dato es: ");
                     Mostrar(R.getLd().getDato());
+                    System.out.println();
                     bandera = true;
                 }
             }
@@ -131,17 +132,69 @@ public class Larbol extends Barbol {
         return bandera;
     }
 
+    public boolean MostrarHermanoIzquierdo(Nodos R, char dato, boolean bandera) {
+        if (R != null) {
+            if (R.getLi() != null & R.getLd() != null) {
+                if (R.getLd().getDato() == dato) {
+                    System.out.print("El hermano izquierdo del dato es: ");
+                    Mostrar(R.getLi().getDato());
+                    System.out.println();
+                    bandera = true;
+                }
+            }
+            if (!bandera & R.getDato() > dato) {
+                bandera = MostrarHermanoIzquierdo(R.getLi(), dato, bandera);
+            } else if (R.getDato() < dato) {
+                bandera = MostrarHermanoIzquierdo(R.getLd(), dato, bandera);
+            }
+        }
+        if (!bandera & R == getPunta()) {
+            System.out.println("El dato no tiene hermano izquierdo");
+        }
+        return bandera;
+    }
+
     public int ContarHojas(Nodos R,int cont) {
         if (R != null) {
-            
             cont = ContarHojas(R.getLi(),cont);
             cont = ContarHojas(R.getLd(),cont);
             if(R.getLd() == null & R.getLi() == null){
                 cont++;
-
-                
             }
         }
         return cont;
+    }
+
+    public int ContarPadres(Nodos R,int cont) {
+        if (R != null) {
+            cont = ContarPadres(R.getLi(),cont);
+            cont = ContarPadres(R.getLd(),cont);
+            if(R.getLd() != null | R.getLi() != null){
+                cont++;
+            }
+        }
+        return cont;
+    }
+
+    public void Altura(char dato){
+        Nodos R = Buscardato(getPunta(), dato);
+        System.out.println("La altura de "+dato+" es: "+CalcularAltura(R,0));
+    }
+
+    public int CalcularAltura(Nodos R, int cont){
+        
+    }
+
+    public Nodos Buscardato(Nodos R, char dato){
+        if (R != null) {
+            if (R.getDato() > dato) {
+                R = Buscardato(R.getLi(), dato);
+            } else if (R.getDato() < dato) {
+                R = Buscardato(R.getLd(), dato);
+            } else {
+                return R;
+            }
+        }
+        return R;
     }
 }
