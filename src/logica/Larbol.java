@@ -138,6 +138,8 @@ public class Larbol extends Barbol {
             cont = ContarHojas(R.getLd(),cont);
             if(R.getLd() == null & R.getLi() == null){
                 cont++;
+
+                
             }
         }
         return cont;
