@@ -8,7 +8,7 @@ public class Nodos {
 
     public Nodos(char dato) {
         this.dato = dato;
-        fb = 0;
+
     }
 
     public char getDato() {

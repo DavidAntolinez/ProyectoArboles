@@ -1,7 +1,5 @@
 package logica;
 
-import java.util.ArrayList;
-
 import bean.Barbol;
 import bean.Nodos;
 
@@ -297,32 +295,36 @@ public class Larbol extends Barbol {
         System.out.println();
     }
 
+    
+
     public void MostratArbol() {
-        ArrayList<String[]> lista = new ArrayList<String[]>();
-        MostrarArbolR(getPunta(), lista, 0);
-        int Nmayor = 0;
-        for (String[] strings : lista) {
-            if (Integer.parseInt(strings[1]) > Nmayor) {
-                Nmayor = Integer.parseInt(strings[1]);
+        int Aarbol = CalcularAltura(getPunta(), 0);
+        String[][] arbolM = new String [Aarbol+1][((int)Math.pow(2, Aarbol+1))-1];
+        for (int i = 0; i < arbolM.length; i++) {
+            for (int j = 0; j < arbolM[0].length; j++) {
+                arbolM[i][j] = " ";
             }
         }
-        
-        for (int i = 0; i <= Nmayor; i++) {
-            for (String[] strings : lista) {
-                if (Integer.parseInt(strings[1]) == i) {
-                    System.out.print(strings[0]);
-                }
+        Matrizarbol(arbolM, getPunta(), Aarbol+1, 0, 0, 0, Aarbol);
+        for (int i = 0; i < arbolM.length; i++) {
+            for (int j = 0; j < arbolM[0].length; j++) {
+                System.out.print(arbolM[i][j]);
             }
             System.out.println();
         }
     }
 
-    private void MostrarArbolR(Nodos R, ArrayList<String[]> lista, int cont) {
+    public void Matrizarbol(String[][] M, Nodos R, int Narbol, int cont, int Cp, int fh, int Ap){
         if (R != null) {
-            String[] elemento = { R.getDato() + "", cont + "" ,""};
-            lista.add(elemento);
-            MostrarArbolR(R.getLi(), lista, cont + 1);
-            MostrarArbolR(R.getLd(), lista, cont + 1);
+            if(R == getPunta()){
+                Cp = ((int)Math.pow(2, Narbol))/2-1;
+                M[cont][Cp] = R.getDato()+"";
+            }else{
+                Cp +=(int)Math.pow(2,Ap)*fh;
+                M[cont][Cp] = R.getDato()+"";
+            }
+            Matrizarbol(M,R.getLi(),Narbol,cont+1,Cp,-1,Ap-1);
+            Matrizarbol(M,R.getLd(),Narbol,cont+1,Cp,1,Ap-1);
         }
     }
 }
