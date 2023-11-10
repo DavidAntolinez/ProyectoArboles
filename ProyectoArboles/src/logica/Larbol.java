@@ -40,10 +40,6 @@ public class Larbol extends Barbol {
         }
     }
 
-    public void h() {
-        System.out.println("null");
-    }
-
     public void Insertar(char dato, Nodos P) {
         if (getPunta() == null) {
             setPunta(new Nodos(dato));
@@ -51,12 +47,14 @@ public class Larbol extends Barbol {
             if (dato > P.getDato()) {
                 if (P.getLd() == null) {
                     P.setLd(new Nodos(dato));
+                    FactorBalance(getPunta(), dato, true);
                 } else {
                     Insertar(dato, P.getLd());
                 }
             } else if (dato < P.getDato()) {
                 if (P.getLi() == null) {
                     P.setLi(new Nodos(dato));
+                    FactorBalance(getPunta(), dato, true);
                 } else {
                     Insertar(dato, P.getLi());
                 }
@@ -295,17 +293,15 @@ public class Larbol extends Barbol {
         System.out.println();
     }
 
-    
-
     public void MostratArbol() {
         int Aarbol = CalcularAltura(getPunta(), 0);
-        String[][] arbolM = new String [Aarbol+1][((int)Math.pow(2, Aarbol+1))-1];
+        String[][] arbolM = new String[Aarbol + 1][((int) Math.pow(2, Aarbol + 1)) - 1];
         for (int i = 0; i < arbolM.length; i++) {
             for (int j = 0; j < arbolM[0].length; j++) {
                 arbolM[i][j] = " ";
             }
         }
-        Matrizarbol(arbolM, getPunta(), Aarbol+1, 0, 0, 0, Aarbol);
+        Matrizarbol(arbolM, getPunta(), Aarbol + 1, 0, 0, 0, Aarbol);
         for (int i = 0; i < arbolM.length; i++) {
             for (int j = 0; j < arbolM[0].length; j++) {
                 System.out.print(arbolM[i][j]);
@@ -314,17 +310,109 @@ public class Larbol extends Barbol {
         }
     }
 
-    public void Matrizarbol(String[][] M, Nodos R, int Narbol, int cont, int Cp, int fh, int Ap){
+    public void Matrizarbol(String[][] M, Nodos R, int Narbol, int cont, int Cp, int fh, int Ap) {
         if (R != null) {
-            if(R == getPunta()){
-                Cp = ((int)Math.pow(2, Narbol))/2-1;
-                M[cont][Cp] = R.getDato()+"";
-            }else{
-                Cp +=(int)Math.pow(2,Ap)*fh;
-                M[cont][Cp] = R.getDato()+"";
+            if (R == getPunta()) {
+                Cp = ((int) Math.pow(2, Narbol)) / 2 - 1;
+                M[cont][Cp] = R.getDato() + "";
+            } else {
+                Cp += (int) Math.pow(2, Ap) * fh;
+                M[cont][Cp] = R.getDato() + "";
             }
-            Matrizarbol(M,R.getLi(),Narbol,cont+1,Cp,-1,Ap-1);
-            Matrizarbol(M,R.getLd(),Narbol,cont+1,Cp,1,Ap-1);
+            Matrizarbol(M, R.getLi(), Narbol, cont + 1, Cp, -1, Ap - 1);
+            Matrizarbol(M, R.getLd(), Narbol, cont + 1, Cp, 1, Ap - 1);
+        }
+    }
+
+    public boolean FactorBalance(Nodos R, char dato, boolean Switch) {
+        if (R.getDato() > dato) {
+            Switch = FactorBalance(R.getLi(), dato, true);
+        } else if (R.getDato() < dato) {
+            Switch = FactorBalance(R.getLd(), dato, true);
+        }
+        if (Switch) {
+            int Ahi = 0, Ahd = 0;
+            if (R.getLi() != null) {
+                Ahi = CalcularAltura(R.getLi(), 0) + 1;
+            }
+            if (R.getLd() != null) {
+                Ahd = CalcularAltura(R.getLd(), 0) + 1;
+            }
+            R.setFb(Ahi - Ahd);
+            if (R.getFb() < -1 || R.getFb() > 1) {
+                Switch = false;
+                AVL(R, Ahi, Ahd);
+            }
+        }
+        return Switch;
+    }
+
+    public void AVL(Nodos P, int Ahi, int Ahd) {
+        Nodos S = null;
+        if (P != getPunta()) {
+            S = BuscarPadre(getPunta(), P.getDato());
+        }
+        Nodos q, R;
+        if (Ahi > Ahd) {
+            q = P.getLi();
+        } else {
+            q = P.getLd();
+        }
+        if (Ahi > Ahd) {
+            R = q.getLd();
+        } else {
+            R = q.getLi();
+        }
+        if (P.getFb() < 0 && q.getFb() < 0) {
+            q.setLi(P);
+            P.setLd(R);
+            auxAVL(S, P, q);
+        } else if (P.getFb() > 0 && q.getFb() > 0) {
+            q.setLd(P);
+            P.setLi(R);
+            auxAVL(S, P, q);
+
+        } else if (P.getFb() < 0 && q.getFb() > 0) {
+            q.setLi(R.getLd());
+            P.setLd(R.getLi());
+            R.setLd(q);
+            R.setLi(P);
+            auxAVL(S, P, R);
+
+        } else {
+            q.setLd(R.getLi());
+            P.setLi(R.getLd());
+            R.setLi(q);
+            R.setLd(P);
+            auxAVL(S, P, R);
+
+        }
+    }
+
+    public Nodos BuscarPadre(Nodos R, char dato) {
+        if (R != null) {
+            if (R.getDato() > dato) {
+                if (R.getLi().getDato() != dato) {
+                    R = BuscarPadre(R.getLi(), dato);
+                }
+            } else if (R.getDato() < dato) {
+                if (R.getLd().getDato() != dato) {
+                    R = BuscarPadre(R.getLd(), dato);
+                }
+            }
+        }
+        return R;
+    }
+
+    public void auxAVL(Nodos S, Nodos P, Nodos q) {
+        if (S != null) {
+            if (S.getLi() == P) {
+                S.setLi(q);
+            } else {
+                S.setLd(q);
+            }
+        } else {
+            setPunta(q);
         }
     }
 }

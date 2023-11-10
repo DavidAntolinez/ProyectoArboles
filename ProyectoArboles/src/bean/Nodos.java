@@ -8,7 +8,6 @@ public class Nodos {
 
     public Nodos(char dato) {
         this.dato = dato;
-
     }
 
     public char getDato() {
